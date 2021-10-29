@@ -1,0 +1,6 @@
+apiVersion: v1beta1
+kind: City
+metadata:
+  name: monte-carlo
+spec:
+  action: committed

@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    version: 1.1.0
+  labels:
+    app: flask-test-kustomize-app
+    env: prd
+    type: demo
+  name: prd-flask-test-kustomize-app-service
+  namespace: default
+spec:
+  ports:
+  - port: 81
+    protocol: TCP
+    targetPort: 80
+  - port: 80
+    protocol: TCP
+    targetPort: 8010
+  selector:
+    app: flask-test-kustomize-app
+    env: prd
+    type: demo
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    version: 1.1.0
+  labels:
+    app: flask-test-kustomize-app
+    env: prd
+    type: demo
+  name: prd-flask-test-kustomize-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flask-test-kustomize-app
+      env: prd
+      type: demo
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        version: 1.1.0
+      labels:
+        app: flask-test-kustomize-app
+        env: prd
+        type: demo
+    spec:
+      containers:
+      - env:
+        - name: APP_LOCATION
+          value: Monaco
+        - name: LISTEN_ADDR
+          value: 0.0.0.0
+        - name: PORT
+          value: "8010"
+        image: eu.gcr.io/immo-280017/flask_test/el-flask-kustomize-test
+        imagePullPolicy: Always
+        name: flask-kustomize-container
+        ports:
+        - containerPort: 8010
+          name: flask-http
+          protocol: TCP
+        resources: {}

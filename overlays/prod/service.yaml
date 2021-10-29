@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-test-kustomize-app-service
+spec:
+  selector:
+    app: flask-test-kustomize-app
+  ports:
+    - name: base-port
+      protocol: TCP
+      port: 81
+      targetPort: 8010

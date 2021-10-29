@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-test-kustomize-app
+spec:
+  template:
+    spec:
+      containers:
+        - name: flask-kustomize-container
+          env:
+            - name: APP_LOCATION
+              value: Monaco

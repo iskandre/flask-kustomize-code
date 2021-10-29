@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-test-kustomize-app
+  labels:
+    app: flask-test-kustomize-app
+    env: stg
+spec:
+  replicas: 2
+  selector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - flask-test-kustomize-app
+      - key: type
+        operator: In
+        values:
+          - demo
+  template:
+    metadata:
+      labels:
+        app: flask-test-kustomize-app
+        env: stg
+        type: demo

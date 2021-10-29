@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: flask-test-kustomize-app
+    env: base
+    type: demo
+  name: flask-test-kustomize-app
+spec:
+  replicas: 1
+  selector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - flask-test-kustomize-app
+      - key: type
+        operator: In
+        values:
+          - demo
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: flask-test-kustomize-app
+        env: base
+        type: demo
+    spec:
+      containers:
+      - image: eu.gcr.io/immo-280017/flask_test/el-flask-kustomize-test
+        name: flask-kustomize-container
+        resources: {}
+        imagePullPolicy: Always
+        env:
+        - name: LISTEN_ADDR
+          value: '0.0.0.0'
+        - name: PORT
+          value: '8010'
+        - name: APP_LOCATION
+          value: Luxembourg
+        - name: DEPLOYED_CITY
+          value: $(DEPLOYED_CITY)
+        - name: ENVIRONMENT
+          value: $(ENVIRONMENT)
+        ports:
+        - name: flask-http
+          containerPort: 8010
+          protocol: TCP

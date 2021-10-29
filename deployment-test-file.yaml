@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-kustomize-service
+spec:
+  selector:
+    app: flask-test-customize-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8010
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: flask-test-kustomize-app
+  name: flask-test-kustomize-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-test-kustomize-app
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: flask-test-kustomize-app
+    spec:
+      containers:
+      - image: eu.gcr.io/immo-280017/flask_test/el-flask-kustomize-test
+        name: flask-kustomize-container
+        resources: {}
+        imagePullPolicy: Always
+        env:
+        - name: LISTEN_ADDR
+          value: '0.0.0.0'
+        - name: PORT
+          value: '8010'
+        - name: APP_LOCATION
+          value: 'Luxembourg'
+        ports:
+        - name: flask-http
+          containerPort: 8010
+          protocol: TCP

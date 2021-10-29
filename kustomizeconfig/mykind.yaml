@@ -1,0 +1,12 @@
+commonLabels:
+- path: spec/selectors
+  create: true
+  kind: MyKind
+
+nameReference:
+- kind: City
+  fieldSpecs:
+  - path: spec/cityRef/name
+    kind: MyKind
+- path: spec/cityRef/action
+  kind: MyKind

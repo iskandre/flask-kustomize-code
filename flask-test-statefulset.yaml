@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: Service
+metadata:
+ name: flask-test-requester
+spec:
+ ports:
+ - protocol: TCP
+   port: 80
+   targetPort: 8011
+ selector:
+   app: flask-test-communication
+ type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: flask-test-recipient
+spec:
+ ports:
+ - protocol: TCP
+   port: 81
+   targetPort: 8012
+ selector:
+   app: flask-test-communication
+ type: NodePort
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+ name: flask-test-communication
+spec:
+ serviceName: flask-test-communication-service
+ podManagementPolicy: Parallel
+ replicas: 1
+ updateStrategy:
+   type: RollingUpdate
+ selector:
+   matchLabels:
+     app: flask-test-communication
+ template:
+   metadata:
+     labels:
+       app: flask-test-communication
+   spec:
+     serviceAccountName: test
+     containers:
+
+       - name: api-requester
+         image: eu.gcr.io/immo-280017/flask_test/flask_requester:latest
+         imagePullPolicy: Always
+         env:
+         - name: LISTEN_ADDR
+           value: '0.0.0.0'
+         - name: PORT
+           value: '8011'
+         - name: REQUEST_HOST
+           value: 'localhost'
+         - name: REQUEST_PORT
+           value: '8012'
+         ports:
+         - name: requester-http
+           containerPort: 8011
+           protocol: TCP
+         volumeMounts:
+         - name: shared-data
+           mountPath: /app-shared-data
+
+       - name: api-recipient
+         image: eu.gcr.io/immo-280017/flask_test/flask_recipient:latest
+         imagePullPolicy: Always
+         env:
+         - name: LISTEN_ADDR
+           value: '0.0.0.0'
+         - name: PORT
+           value: '8012'
+         volumeMounts:
+         - name: shared-data
+           mountPath: /flask-data
+         ports:
+         - name: recipient-http
+           containerPort: 8012
+           protocol: TCP
+     volumes:
+       - name: shared-data
+         persistentVolumeClaim:
+           claimName: pvc-myflask-test
+
